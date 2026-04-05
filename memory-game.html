@@ -11,8 +11,21 @@
             --background-color: #f5f5f5;
             --card-back: #1976d2;
             --card-front: #ffffff;
+            --panel-bg: #ffffff;
+            --panel-shadow: rgba(0,0,0,0.1);
             --text-color: #333333;
             --success-color: #4caf50;
+        }
+
+        body.dark-mode {
+            --primary-color: #90caf9;
+            --background-color: #121212;
+            --card-back: #0d47a1;
+            --card-front: #1e1e1e;
+            --panel-bg: #1f1f1f;
+            --panel-shadow: rgba(255,255,255,0.05);
+            --text-color: #eceff1;
+            --success-color: #66bb6a;
         }
 
         * {
@@ -54,10 +67,10 @@
             justify-content: space-around;
             flex-wrap: wrap;
             gap: 1rem;
-            background: white;
+            background: var(--panel-bg);
             padding: 1rem;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px var(--panel-shadow);
             margin-bottom: 2rem;
         }
 
@@ -173,12 +186,13 @@
         }
 
         .modal-content {
-            background: white;
+            background: var(--panel-bg);
             padding: 2rem;
             border-radius: 8px;
             text-align: center;
             max-width: 400px;
             width: 90%;
+            box-shadow: 0 2px 4px var(--panel-shadow);
         }
 
         /* Best scores section */
@@ -190,9 +204,10 @@
         .scores-list {
             max-width: 600px;
             margin: 1rem auto;
-            background: white;
+            background: var(--panel-bg);
             padding: 1rem;
             border-radius: 8px;
+            box-shadow: 0 2px 4px var(--panel-shadow);
         }
 
         /* Responsive design adjustments */
@@ -233,6 +248,9 @@
             <div class="stat">
                 <h2>Rating</h2>
                 <p class="stat-value rating" aria-live="polite">★★★</p>
+            </div>
+            <div class="stat">
+                <button class="theme-toggle">Dark Mode</button>
             </div>
         </div>
 
@@ -286,6 +304,7 @@
             modal: document.querySelector('.modal'),
             finalStats: document.querySelector('.final-stats'),
             gridButtons: document.querySelectorAll('.grid-btn'),
+            themeToggle: document.querySelector('.theme-toggle'),
             scoresList: document.querySelector('.scores-list')
         };
 
@@ -427,6 +446,17 @@
                 '<p>No scores yet. Start playing to set some records!</p>';
         }
 
+        function setTheme(isDark) {
+            document.body.classList.toggle('dark-mode', isDark);
+            elements.themeToggle.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+            localStorage.setItem('memoryGameDarkMode', isDark ? 'dark' : 'light');
+        }
+
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('memoryGameDarkMode') || 'light';
+            setTheme(savedTheme === 'dark');
+        }
+
         // Handle card flip logic
         function flipCard(card) {
             if (!gameState.canFlip || card.classList.contains('matched') || 
@@ -487,6 +517,10 @@
             initializeGrid();
         });
 
+        elements.themeToggle.addEventListener('click', () => {
+            setTheme(!document.body.classList.contains('dark-mode'));
+        });
+
         elements.gridButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const size = parseInt(button.dataset.size);
@@ -498,7 +532,8 @@
             });
         });
 
-        // Initialize game
+        // Initialize theme and game
+        initializeTheme();
         updateScoresList();
         initializeGrid();
     </script>
